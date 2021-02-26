@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios';
-import Nav from '../Nav/Nav'
+import Nav from '../Nav/Nav';
 
 
 const SignIn = props => {
@@ -22,12 +22,20 @@ const SignIn = props => {
             }
         })
             .then(resp => {
-                console.log(resp.data)
+                console.log(resp)
                 setErrors({})
                 
-                localStorage.setItem('access_token', resp.data.access_token)
-                localStorage.setItem('refresh_token', resp.data.refresh_token)
-                props.history.push('/posts')
+                // localStorage.setItem('access_token', resp.data.access_token)
+                // localStorage.setItem('refresh_token', resp.data.refresh_token)
+
+                localStorage.setItem('access_token', resp.data.posts.original.access_token)
+                localStorage.setItem('refresh_token', resp.data.posts.original.refresh_token)
+               
+                // localStorage.setItem('user', JSON.stringify(resp.data.user))
+                props.history.push({
+                    pathname: '/posts',
+                    state: { user: resp.data.user}
+                })
             })
             .catch(err => setErrors(err.response.data.errors))
     }

@@ -1,73 +1,43 @@
-import React, { useEffect, useState} from 'react'
-import axios from 'axios';
+import React, { useEffect, useState, useContext} from 'react'
 import NavLoggedUser from '../Nav/NavLoggedUser';
+import OnePost from './OnePost'
+import { GlobalContext } from '../Context/GlobalContext'; 
+import { Link } from 'react-router-dom';
 
-const Posts = (props) => {
-    const [posts, setPosts] = useState([]);
+const Posts = props => {
+    const global = useContext(GlobalContext);     
+    const message = null;
 
     useEffect(() => {
-        fetchData()
-    },[])
-
-    const fetchData = () => {
-        axios.get("/posts", {
-            headers: {
-                'Content-Type' : 'application/json',
-                'Accept'       : 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            }
-        })
-        .then(resp => setPosts(resp.data))
-        .catch(err => {
-            if(err.response.status === 401){
-                const refresh = localStorage.getItem("refresh_token");
-
-                axios.post("/refresh",{ 'refresh_token' : refresh}, {
-                    headers: {
-                        'Accept'        : 'application/json',
-                        'refresh_token' : refresh
-                    }
-                })
-                .then(res => {
-                    console.log("token refreshed")
-                    localStorage.setItem('access_token', res.data.access_token);
-                    localStorage.setItem('refresh_token', res.data.refresh_token);
-
-                    axios.get("/posts", {
-                        headers: {
-                            'accept' : 'application/json',
-                            'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
-                        }
-                    })
-                    .then(response => setPosts(response.data))
-                    .catch(er => console.log("catch "+er))
-                })
-                .catch(error => {
-                    localStorage.clear()
-                    props.history.push('/sign-up')
-                })
-            }
-        })
-    }
-
+        global.fetchData();
+    }, [])
+    
     return (
         <div>
             <NavLoggedUser />
+
             <div className="container list_posts">
-                <h2 className="text-uppercase text-underline">List of products</h2>
-                
-                {posts.map(post => (
-                   
-                    <div className="my-3 card" key={post.id}>
-                        <div className="card-body">
-                            <h4 className="card-title">{post.title}</h4>
-                            <p className="card-text">{post.content}</p>
-                        </div>
+                <div className="d-flex justify-content-between">
+                    <h2 className="text-uppercase text-underline">List of products</h2>
+                    <Link to='/new/post' className="btn btn-success">ADD POST</Link>
+                </div>
+
+                {message && (
+                    <div className="alert alert-success" role="alert">
+                        <strong>{message}</strong>
                     </div>
+                )}
+                
+                {global.state[0] && global.state[0].map(post => (
+                    <OnePost 
+                        key={post.id} 
+                        post={post}
+                        id={props.location.state ? props.location.state.user.id : null}
+                    />                    
                 ))}
             </div>
         </div>
     )
 }
 
-export default Posts
+export default Posts;

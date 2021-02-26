@@ -1,14 +1,16 @@
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter, useHistory, NavLink } from 'react-router-dom';
 import './Nav.css';
 
-const navLoggedUser = (props) => {
+const NavLoggedUser = () => {
+    
+    let history = useHistory();
 
     const logout = () => {
-       
         localStorage.clear()
-        props.history.push('/sign-up')
+        history.push('/sign-in')
     }
+    
     return (
         <div className="Navigation mb-5">
             <nav className="navbar navbar-expand-sm navbar-dark bg-dark text-white">
@@ -16,13 +18,13 @@ const navLoggedUser = (props) => {
                     
                     <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                         <li className="nav-item active">
-                            <Link to='/' className="nav-link">HOME</Link>
+                            <NavLink  exact activeClassName="text-success" to='/' className="nav-link">HOME</NavLink>
                         </li>
                         <li className="nav-item active">
-                            <Link to='/posts' className="nav-link">POSTS</Link>
+                            <NavLink  activeClassName="text-success" to='/posts' className="nav-link">POSTS</NavLink>
                         </li>
                         <li className="nav-item active">
-                            <p onClick={logout} className="nav-link">LOG OUT</p>
+                            <p onClick={logout} className="nav-link">LOGOUT</p>
                         </li>             
                     </ul>
                 </div>
@@ -31,4 +33,4 @@ const navLoggedUser = (props) => {
     )
 }
 
-export default withRouter(navLoggedUser);
+export default withRouter(NavLoggedUser);
