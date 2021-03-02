@@ -3,6 +3,8 @@ import NavLoggedUser from '../Nav/NavLoggedUser';
 import OnePost from './OnePost'
 import { GlobalContext } from '../Context/GlobalContext'; 
 import { Link } from 'react-router-dom';
+import { useHistory } from "react-router";
+
 
 const Posts = props => {
     const global = useContext(GlobalContext);     

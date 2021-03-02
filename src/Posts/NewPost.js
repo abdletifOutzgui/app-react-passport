@@ -23,7 +23,11 @@ const NewPost = props => {
             const post = { title, content };
             axios.post('/posts', post, header)
                 .then(res => props.history.push('/posts'))
-                .catch(error => console.log(error))
+                .catch(error => {
+                    if(error.response.status === 401){
+                        window.location.href = '/sign-in';
+                    }
+                })
         }
     }
     return (
@@ -39,7 +43,8 @@ const NewPost = props => {
                             value={title} 
                             onChange={ e => setTitle(e.target.value)}
                             id="content" 
-                            className="form-control"  
+                            className="form-control"
+                            placeholder="Title..."  
                         />
                     </div>
                     <div className="form-group">
@@ -50,7 +55,8 @@ const NewPost = props => {
                             value={content} 
                             onChange={ e => setContent(e.target.value)}
                             id="content" 
-                            className="form-control"  
+                            className="form-control"
+                            placeholder="Content ..."  
                         />
                     </div>
                     <input type="submit" className="btn btn-block btn-primary" value="NEW Post" />

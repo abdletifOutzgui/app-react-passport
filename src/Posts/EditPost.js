@@ -4,7 +4,10 @@ import axios from 'axios';
 
 const EditPost = props => {
 
-    const [post, setPost] = useState({});
+    const [post, setPost] = useState({
+        title: '',
+        content: ''
+    });
 
     useEffect(() => {
         getPost();
@@ -16,7 +19,7 @@ const EditPost = props => {
 
         axios.get(`/posts/${id}`, {
             headers: {
-                'Content-Type' : 'application/json',
+                'Content-Type' : 'Application/json',
                 'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
             }
         })
@@ -46,7 +49,7 @@ const EditPost = props => {
         })
         .catch(err => {
             console.log(err)
-            if (err.response.status == 401) {
+            if (err.response.status === 401) {
                 props.history.push('/sign-in')
             }
         })

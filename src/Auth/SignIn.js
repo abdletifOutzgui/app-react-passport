@@ -1,42 +1,43 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Nav from '../Nav/Nav';
 
 
 const SignIn = props => {
 
+    const history = useHistory();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
+    const header = {
+        headers: {
+            'Content-Type' : 'Application/json',
+            'Accept'       : 'Application/json'
+        }
+    }
     const signInUser = (e) => {
         e.preventDefault();
 
         const user = {
             email, password
         }
-        axios.post("/login", user, {
-            headers: {
-                'Content-Type' : 'application/json',
-                'Accept'       : 'application/json'
-            }
-        })
-            .then(resp => {
-                console.log(resp)
+        axios.post("/login", user, header)
+            .then(response => {
+
+                console.log('sign in '+response)
                 setErrors({})
                 
-                // localStorage.setItem('access_token', resp.data.access_token)
-                // localStorage.setItem('refresh_token', resp.data.refresh_token)
+                localStorage.setItem('access_token', response.data.data.access_token)
+                localStorage.setItem('refresh_token', response.data.data.refresh_token)
 
-                localStorage.setItem('access_token', resp.data.posts.original.access_token)
-                localStorage.setItem('refresh_token', resp.data.posts.original.refresh_token)
-               
-                // localStorage.setItem('user', JSON.stringify(resp.data.user))
-                props.history.push({
+                history.push({
                     pathname: '/posts',
-                    state: { user: resp.data.user}
+                    state: { user: response.data.user}
                 })
             })
+          
             .catch(err => setErrors(err.response.data.errors))
     }
     return (
@@ -57,9 +58,7 @@ const SignIn = props => {
                             autoFocus
                         />
                         {errors.email && (
-                            <p className="text-danger">
-                                {errors.email}
-                            </p>
+                            <p className="text-danger">{errors.email}</p>
                         )}
                     </div>
 
@@ -73,9 +72,7 @@ const SignIn = props => {
                             placeholder="Your Password" 
                         />
                         {errors.password && (
-                            <p className="text-danger">
-                                {errors.password}
-                            </p>
+                            <p className="text-danger">{errors.password}</p>
                         )}
                     </div>
 

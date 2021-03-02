@@ -4,23 +4,29 @@ import axios from 'axios';
 
 export const GlobalContext = createContext();
 export const GlobalProvider = props => {
-
+    
     const [posts, setPosts] = useState([]);
-
-    const token = localStorage.getItem('access_token');
-    const authAxios = axios.create({
-        headers: {
-           Authorization: `Bearer ${token}`
-        }
-    })
-   
-
+    
     const fetchData = () => {
-
-        authAxios.get("/posts")
-        .then(resp => setPosts(resp.data))
-        .catch(error => {
-
+        // const token = localStorage.getItem('access_token');
+        
+        // const header = {
+        //     headers: {
+        //         Authorization   : `Bearer ${token}`
+        //     }
+        // }
+        
+        axios.get("/posts",{
+            headers: {
+                "Access-Control-Allow-Origin"  : "*",
+                "Access-Control-Allow-Methods" : "DELETE, GET, OPTIONS, HEAD, PATCH, POST, PUT",
+                "Access-Control-Allow-Headers" : "Authorization",
+                "Content-Type"                 : "Application/json"
+            }
+        })
+            .then(resp => setPosts(resp.data))
+            .catch(error => {
+            console.log(error)
             if(error.response.status === 401){
                 const refresh = localStorage.getItem("refresh_token");
 
@@ -32,27 +38,31 @@ export const GlobalProvider = props => {
                 })
                 .then(res => {
                     console.log("token refreshed")
+                
                     localStorage.setItem('access_token', res.data.access_token);
                     localStorage.setItem('refresh_token', res.data.refresh_token);
 
-                    authAxios.get("/posts")
+                    axios.get("/posts", {
+                        headers: {
+                            Authorization   : `Bearer ${localStorage.getItem('access_token')}`
+                        }
+                    })
                         .then(response => setPosts(response.data))
-                        .catch(err => console.log("catch " +err))
+                        .catch(err => console.log(err))
                 })
                 .catch(eror => {
                     localStorage.clear()
-                    window.location.assign('/sign-in')
+                    window.location.href = '/sign-in'
                 })
             }
         })
     }
     return (
         <GlobalContext.Provider value={{ 
-            state     : [posts, setPosts],
+            state     : [posts, setPosts], 
+            user      : '1',
             fetchData : fetchData
-         }}>
-            {props.children}
-        </GlobalContext.Provider>
+        }}>{props.children}</GlobalContext.Provider>
     );
 }
 

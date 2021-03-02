@@ -1,22 +1,28 @@
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 const OnePost = props => {
-
+    
+    const history = useHistory();
+    const header =  {
+        headers: {
+            'Accept' : 'application/json',
+            'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
+        }
+    }
     // Delete Post
     const deletePost = id => {
+
         if(window.confirm("Do you want really delete this post ?")) {
-            axios.delete(`/posts/${id}`, {
-                headers: {
-                    'Accept' : 'application/json',
-                    'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
-                }
+            axios.delete(`/posts/${id}`, header)
+
+            .then(res => history.push('/posts'))
+            .catch(err => {
+                if(err.response.status === 401){
+                    history.push('/sign-in');
+                }                
             })
-            .then(res => {
-                props.history.push('/posts')
-            })
-            .catch(err => console.log(err))
         }
     };
 
@@ -35,7 +41,6 @@ const OnePost = props => {
                     <Link to={`/posts/${props.post.id}/edit`} className="btn btn-primary btn-sm ">EDIT</Link>
                 </div> 
             ) : null}
-                     
         </>
     )
 }
