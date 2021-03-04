@@ -5,17 +5,12 @@ import axios from 'axios';
 const OnePost = props => {
     
     const history = useHistory();
-    const header =  {
-        headers: {
-            'Accept' : 'application/json',
-            'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
-        }
-    }
+  
     // Delete Post
     const deletePost = id => {
 
         if(window.confirm("Do you want really delete this post ?")) {
-            axios.delete(`/posts/${id}`, header)
+            axios.delete(`http://localhost:3001/api/posts/${id}`)
 
             .then(res => history.push('/posts'))
             .catch(err => {

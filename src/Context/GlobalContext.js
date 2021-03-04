@@ -8,29 +8,16 @@ export const GlobalProvider = props => {
     const [posts, setPosts] = useState([]);
     
     const fetchData = () => {
-        // const token = localStorage.getItem('access_token');
         
-        // const header = {
-        //     headers: {
-        //         Authorization   : `Bearer ${token}`
-        //     }
-        // }
         
-        axios.get("/posts",{
-            headers: {
-                "Access-Control-Allow-Origin"  : "*",
-                "Access-Control-Allow-Methods" : "DELETE, GET, OPTIONS, HEAD, PATCH, POST, PUT",
-                "Access-Control-Allow-Headers" : "Authorization",
-                "Content-Type"                 : "Application/json"
-            }
-        })
+        axios.get("http://localhost:3001/api/posts")
             .then(resp => setPosts(resp.data))
             .catch(error => {
             console.log(error)
             if(error.response.status === 401){
                 const refresh = localStorage.getItem("refresh_token");
 
-                axios.post("/refresh", { 'refresh_token' : refresh}, {
+                axios.post("http://localhost:3001/api/refresh", { 'refresh_token' : refresh}, {
                     headers: {
                         'Accept'        : 'application/json',
                         'refresh_token' : refresh
@@ -42,7 +29,7 @@ export const GlobalProvider = props => {
                     localStorage.setItem('access_token', res.data.access_token);
                     localStorage.setItem('refresh_token', res.data.refresh_token);
 
-                    axios.get("/posts", {
+                    axios.get("http://localhost:3001/api/posts", {
                         headers: {
                             Authorization   : `Bearer ${localStorage.getItem('access_token')}`
                         }

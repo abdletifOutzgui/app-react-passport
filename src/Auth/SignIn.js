@@ -4,6 +4,25 @@ import axios from 'axios';
 import Nav from '../Nav/Nav';
 
 
+const apiUrl = 'http://localhost:3001';
+
+axios.interceptors.request.use(
+    config => {
+        const { origin } = new URL(config.url);
+        const allowedOrigins = [apiUrl];
+        const token = localStorage.getItem('access_token');
+
+        if (allowedOrigins.includes(origin)) {
+            config.headers.authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
+
+    
 const SignIn = props => {
 
     const history = useHistory();
@@ -11,35 +30,24 @@ const SignIn = props => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
-    const header = {
-        headers: {
-            'Content-Type' : 'Application/json',
-            'Accept'       : 'Application/json'
-        }
-    }
-    const signInUser = (e) => {
-        e.preventDefault();
+    const signInUser = async (e) => {
 
+        e.preventDefault();
+        
         const user = {
             email, password
         }
-        axios.post("/login", user, header)
-            .then(response => {
+        const { data } = await axios.post(`${apiUrl}/api/login`, user);
+        localStorage.setItem('access_token', data.data.access_token);
 
-                console.log('sign in '+response)
-                setErrors({})
-                
-                localStorage.setItem('access_token', response.data.data.access_token)
-                localStorage.setItem('refresh_token', response.data.data.refresh_token)
-
-                history.push({
-                    pathname: '/posts',
-                    state: { user: response.data.user}
-                })
-            })
-          
-            .catch(err => setErrors(err.response.data.errors))
-    }
+        console.log(data);    
+        history.push({
+            pathname: '/posts',
+            state: { user: data.user}
+        })
+    };
+   
+    
     return (
         <div>
             <Nav />

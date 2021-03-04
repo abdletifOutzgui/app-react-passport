@@ -2,12 +2,10 @@ import React, { useEffect, useState} from 'react';
 import NavLoggedUser from '../Nav/NavLoggedUser'
 import axios from 'axios';
 import {withRouter} from 'react-router-dom';
-import PageNotFound from '../Pages/PageNotFound';
 
 const ShowPost = (props) => {
 
     const [post, setPost] = useState({});
-
     useEffect(() => {
         getPost()
     }, [])
@@ -15,13 +13,8 @@ const ShowPost = (props) => {
     const getPost = () => {
         const id = props.match.params.id;
         
-        axios.get(`/posts/${id}`, {
-            headers: {
-                'Content-Type' : 'application/json',
-                'Accept'       : 'application/json',
-                'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
-            }
-        })
+        axios.get(`http://localhost:3001/api/posts/${id}`)
+
         .then(response => setPost(response.data))
         .catch(error => {
             if(error.response.status === 401){

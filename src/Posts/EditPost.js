@@ -17,15 +17,10 @@ const EditPost = props => {
     
     const getPost = () => {
 
-        axios.get(`/posts/${id}`, {
-            headers: {
-                'Content-Type' : 'Application/json',
-                'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
-            }
-        })
+        axios.get(`http://localhost:3001/api/posts/${id}`)
         .then(response => setPost(response.data))
         .catch(error => {
-            if (error.response.status == 401) {
+            if (error.response.status === 401) {
                 props.history.push('/sign-in')
             }
         })
@@ -34,12 +29,7 @@ const EditPost = props => {
     const updatePost = e => {
         e.preventDefault();
 
-        axios.put(`/posts/${id}`, post, {
-            headers: {
-                'Content-Type' : 'application/json',
-                'Authorization' : `Bearer ${localStorage.getItem('access_token')}`
-            }
-        })
+        axios.put(`http://localhost:3001/api/posts/${id}`, post)
         .then(res => {
             console.log(res)
             props.history.push({
