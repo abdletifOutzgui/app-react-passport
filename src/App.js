@@ -10,6 +10,7 @@ import PageNotFound from './Pages/PageNotFound';
 import EditPost from './Posts/EditPost';
 import NewPost from './Posts/NewPost';
 import { GlobalProvider } from './Context/GlobalContext';
+import Cookie from './Cookie';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
                   <Route path='/new/post' exact component={NewPost} />
                   <Route path='/posts/:id' exact component={ShowPost} />
                   <Route path='/posts/:id/edit' exact component={EditPost} />
+                  <Route path='/cookie' exact component={Cookie} />
                   <Route component={PageNotFound} />
               </Switch>
           </div>

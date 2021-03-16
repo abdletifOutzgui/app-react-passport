@@ -11,7 +11,7 @@ axios.interceptors.request.use(
         const { origin } = new URL(config.url);
         const allowedOrigins = [apiUrl];
         const token = localStorage.getItem('access_token');
-
+        
         if (allowedOrigins.includes(origin)) {
             config.headers.authorization = `Bearer ${token}`;
         }
@@ -21,8 +21,6 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
-    
 const SignIn = props => {
 
     const history = useHistory();
@@ -30,24 +28,34 @@ const SignIn = props => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
-    const signInUser = async (e) => {
+    const signInUser = (e) => {
 
         e.preventDefault();
-        
-        const user = {
-            email, password
-        }
-        const { data } = await axios.post(`${apiUrl}/api/login`, user);
-        localStorage.setItem('access_token', data.data.access_token);
+        const user = { email, password }
 
-        console.log(data);    
-        history.push({
-            pathname: '/posts',
-            state: { user: data.user}
+        axios.post(`${apiUrl}/api/login`, user, { withCredentials: true }, {
+            headers: { 
+                'Access-Control-Allow-Origin': 'http://localhost:3000',
+                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Methods": "GET, PUT, POST, PATCH, DELETE, OPTIONS",
+                'Access-Control-Request-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+                'Accept': 'Application/json',
+                'Content-Type': 'Application/json',
+            }
         })
-    };
-   
-    
+            .then(resp => {
+            
+                localStorage.setItem('access_token', resp.data.data.access_token);
+        
+                console.log(resp.data);
+                history.push({
+                    pathname: '/posts',
+                    state: { user: resp.data.user}
+                })
+            })
+            .catch(err => console.info(err))
+        };
+      
     return (
         <div>
             <Nav />
@@ -58,7 +66,7 @@ const SignIn = props => {
                     <div className="form-group">
                     <input 
                             type="email" 
-                            name="email" 
+                            name="my_email" 
                             value={email}
                             onChange={ e => setEmail(e.target.value)}
                             className="form-control" 

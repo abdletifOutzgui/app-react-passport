@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { withRouter, useHistory, NavLink } from 'react-router-dom';
 import './Nav.css';
@@ -7,8 +8,13 @@ const NavLoggedUser = () => {
     let history = useHistory();
 
     const logout = () => {
-        localStorage.clear()
-        history.push('/sign-in')
+        axios.post('http://localhost:3001/api/logout', { withCredentials: true })
+            .then(resp => {
+                console.log(resp.data.message)
+                localStorage.clear()
+                history.push('/sign-in')
+            })
+            .catch(error => console.log(error))
     }
     
     return (
